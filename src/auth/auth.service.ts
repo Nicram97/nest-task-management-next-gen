@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  LoggerService,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { UsersRepository } from './users.repository';
 import * as brcypt from 'bcrypt';
@@ -8,6 +14,7 @@ import { JwtPayload } from './jwt-payload.interface';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(Logger) private readonly logger: LoggerService,
     private usersRepository: UsersRepository,
     private jwtService: JwtService,
   ) {}
@@ -24,7 +31,7 @@ export class AuthService {
 
     if (user && (await brcypt.compare(password, user.password))) {
       const payload: JwtPayload = { username };
-      const accessToken: string = await this.jwtService.sign(payload);
+      const accessToken: string = this.jwtService.sign(payload);
       return { accessToken };
     }
     throw new UnauthorizedException('Please check Your login credentials.');
