@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
@@ -20,6 +21,14 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
+  const config = new DocumentBuilder()
+    .setTitle('Api example')
+    .setDescription('The task management API description')
+    .setVersion('1.0')
+    .addTag('tasks')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
   await app.listen(process.env.PORT);
 }
 bootstrap();
