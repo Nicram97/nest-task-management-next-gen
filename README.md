@@ -8,6 +8,8 @@
 ## Description
 
 NestJs + Typescript task management app with JWT.
+To enable connection to Postgres database You can set it by Yourself or use
+[https://github.com/khezen/compose-postgres/blob/master/docker-compose.yml](https://github.com/khezen/compose-postgres/blob/master/docker-compose.yml) ready docker compose file, just adjust username/password etc.
 
 ## Installation
 
