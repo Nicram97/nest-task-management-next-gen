@@ -5,11 +5,12 @@ import {
   LoggerService,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import { UsersRepository } from './users.repository';
 import * as brcypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
+import { AuthSignInCredentialsDto } from './dto/auth-signin-credentials.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,14 +20,19 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    return this.usersRepository.createUser(authCredentialsDto);
+  async signUp(
+    authCredentialsDto: AuthSignUpCredentialsDto,
+  ): Promise<{ accessToken: string }> {
+    await this.usersRepository.createUser(authCredentialsDto);
+    const payload: JwtPayload = { username: authCredentialsDto.username };
+    const accessToken: string = this.jwtService.sign(payload);
+    return { accessToken };
   }
 
   async signIn(
-    authCredentialsDto: AuthCredentialsDto,
+    authCredentialsSignInDto: AuthSignInCredentialsDto,
   ): Promise<{ accessToken: string }> {
-    const { username, password } = authCredentialsDto;
+    const { username, password } = authCredentialsSignInDto;
     const user = await this.usersRepository.findOne({ username });
 
     if (user && (await brcypt.compare(password, user.password))) {

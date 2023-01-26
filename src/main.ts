@@ -19,6 +19,10 @@ async function bootstrap() {
       transports: [new winston.transports.Console()],
     }),
   });
+  app.enableCors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
   const config = new DocumentBuilder()
@@ -29,7 +33,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  console.log(`App listening on port: ${process.env.PORT}`);
+
   await app.listen(process.env.PORT);
+  console.log(`App listening on port: ${process.env.PORT}`);
 }
 bootstrap();
